@@ -81,7 +81,8 @@ unsetopt ALL_EXPORT
 alias man='LC_ALL=C LANG=C man'
 alias pa='ps -A|grep'
 alias ll='ls -alh'
-alias ls='ls -G'
+#alias ls='ls -G' # color: Mac version
+alias ls='ls --color=always' #color: Linux version
 alias bye="kill -9 $$"
 
 
