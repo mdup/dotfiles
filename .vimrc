@@ -299,7 +299,7 @@ Plugin 'git://git.wincent.com/command-t.git'
 " NERDCommenter
 Plugin 'scrooloose/nerdcommenter'
 " Fuzzy completion
-Bundle 'Valloric/YouCompleteMe'
+"Bundle 'Valloric/YouCompleteMe'
 " Color schemes
 Plugin 'flazz/vim-colorschemes'
 " Syntastic
