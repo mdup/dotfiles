@@ -328,6 +328,8 @@ Bundle 'Lokaltog/vim-easymotion'
 "Plugin 'fholgado/minibufexpl.vim'
 " Minimap?
 Plugin 'severin-lemaignan/vim-minimap'
+" Rainbow parentheses
+Plugin 'kien/rainbow_parentheses.vim'
 call vundle#end()
 filetype plugin indent on
 
@@ -447,3 +449,5 @@ map <Leader>mm :MBEFocus<cr>
 nnoremap <silent> <Leader>t :CommandT<CR>    " actually comes by default
 nnoremap <silent> <leader>b :CommandTMRU<cr> " actually comes by default
 
+" Rainbow parentheses
+let g:rbpt_loadcmd_toggle = 1
