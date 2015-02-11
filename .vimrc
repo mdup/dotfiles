@@ -203,6 +203,7 @@ set expandtab
 "set tabstop=2
 set shiftwidth=4
 set tabstop=4
+set softtabstop=4
 nmap <C-S-K> <C-]>
 set textwidth=80
 
@@ -243,6 +244,7 @@ nnoremap <S-Up> <C-w>+
 nnoremap <S-Down> <C-w>-
 
 imap jk <Esc>
+imap kj <Esc>
 
 
 " snipMate
@@ -261,12 +263,12 @@ autocmd BufNewFile,BufRead *.json set ft=javascript "enable json hl
 cmap w!! w !sudo tee %
 
 " cursor colors
-highlight Cursor guifg=yellow guibg=magenta
-highlight iCursor guifg=yellow guibg=purple
-set guicursor=n-v-c:block-Cursor
-set guicursor+=i:ver100-iCursor
-set guicursor+=n-v-c:blinkon200
-set guicursor+=i:blinkon100
+"highlight Cursor guifg=yellow guibg=magenta
+"highlight iCursor guifg=yellow guibg=purple
+"set guicursor=n-v-c:block-Cursor
+"set guicursor+=i:ver100-iCursor
+"set guicursor+=n-v-c:blinkon200
+"set guicursor+=i:blinkon100
 
 set guioptions-=r
 set guioptions-=R
@@ -299,7 +301,7 @@ Plugin 'git://git.wincent.com/command-t.git'
 " NERDCommenter
 Plugin 'scrooloose/nerdcommenter'
 " Fuzzy completion
-"Bundle 'Valloric/YouCompleteMe'
+Bundle 'Valloric/YouCompleteMe'
 " Color schemes
 Plugin 'flazz/vim-colorschemes'
 " Syntastic
@@ -309,7 +311,8 @@ Plugin 'scrooloose/syntastic'
 " C++11 Syntax highlighter
 Bundle 'octol/vim-cpp-enhanced-highlight'
 " Show marks
-Plugin 'kshenoy/vim-signature'
+"Plugin 'kshenoy/vim-signature'
+"Plugin 'vim-scripts/ShowMarks'
 " Parentheses, braces, brackets editing
 Plugin 'surround.vim'
 " Rename current buffer.
@@ -328,21 +331,46 @@ Bundle 'Lokaltog/vim-easymotion'
 "Plugin 'fholgado/minibufexpl.vim'
 " Minimap?
 Plugin 'severin-lemaignan/vim-minimap'
-" Rainbow parentheses
-Plugin 'kien/rainbow_parentheses.vim'
+" Switch between .h and .cpp
+Plugin 'derekwyatt/vim-fswitch'
+" Ack (grep-like)
+Plugin 'mileszs/ack.vim'
+" Tabularize
+Plugin 'godlygeek/tabular'
+" Rainbow
+"Plugin 'kien/rainbow_parentheses.vim'
+Plugin 'luochen1990/rainbow'
+" Black and white color scheme, for printing (colors printbw)
+Plugin 'print_bw.zip'
+" Snippets engine
+Plugin 'SirVer/ultisnips'
+" Snippets database
+Plugin 'honza/vim-snippets'
+" Manage tab behaviour (snippets priority + fallback on YCM)
+"Plugin 'ervandew/supertab'
+" Kivy highlight
+Plugin 'farfanoide/vim-kivy'
+" Coffeescript
+Plugin 'kchmck/vim-coffee-script'
+
 call vundle#end()
 filetype plugin indent on
 
 " Color scheme indication must come after plugin information.
+" 80-character wide is the rule.
+:set colorcolumn=81
+highlight ColorColumn guibg=#393333
+
 " And cursor color must come after color scheme.
 "colors solarized
 "colors wombat
 if has("gui_running")
-    highlight Cursor guifg=yellow guibg=magenta    highlight iCurs
-    or guifg=yellow guibg=purple
-    command! ResetCursorColor execute "highlight Cursor guifg=yellow guibg=magenta | highlight iCursor guifg=yellow guibg=purple"
+    set guifont=Monospace\ 9
+    highlight Cursor guifg=yellow guibg=magenta
+    highlight iCursor guifg=yellow guibg=purple
     " GUI Theme here:
-    colors solarized
+    colors wombat
+    highlight ColorColumn guibg=#222
     set bg=dark
 else
     " 256 colors: use if you're not running native solarized in the terminal,
@@ -355,20 +383,23 @@ else
     set bg=dark
     "colors wombat
 endif
+command! ResetCursorColor execute "highlight Cursor guifg=yellow guibg=magenta | highlight iCursor guifg=purple guibg=yellow"
+ResetCursorColor
 
 " YouCompleteMe
 let g:ycm_path_to_python_interpreter = '/usr/bin/python'
-" TAB makes the popup appear.
-imap <C-Space> <C-N>
+" C-Space makes the popup appear.
+"imap <C-Space> <C-N>
 
 "set complete=.,b,u,]
 "set wildmode=longest,list:longest
 set completeopt=menu,preview
 " turn on debug info
 let g:ycm_server_keep_logfiles = 1
+let g:ycm_server_use_vim_stdout = 0
 let g:ycm_server_log_level = 'debug'
 let g:ycm_confirm_extra_conf = 0 " disable this annoying popup
-nnoremap <silent> <Leader>e :YcmDiags<CR>
+nnoremap <silent> <Leader>e :YcmForceCompileAndDiagnostics<CR>
 
 " Syntastic / C++
 let g:syntastic_enable_highlighting=1
@@ -393,16 +424,13 @@ nnoremap <C-N> :set rnu!<CR>
 " jumps.
 map ' `
 
-" 80-character wide is the rule.
-:set colorcolumn=81
-highlight ColorColumn guibg=#393333
-
 " Shortcut to :noh
 nnoremap <silent> <Leader>n :noh<CR>
 "
 " Trailing whitespace are evil: highlight em. Make a command to remove them:
 " ,t
 " FIXME: this doesn't work on newly open file; .vimrc has to be resourced.
+" Note: use `match none` to clear the highlighting.
 match ErrorMsg '\s\+$'
 function! TrimWhiteSpace()
     %s/\s\+$//e
@@ -449,5 +477,45 @@ map <Leader>mm :MBEFocus<cr>
 nnoremap <silent> <Leader>t :CommandT<CR>    " actually comes by default
 nnoremap <silent> <leader>b :CommandTMRU<cr> " actually comes by default
 
-" Rainbow parentheses
-let g:rbpt_loadcmd_toggle = 1
+" Easymotion enhanced slash-find
+"map  / <Plug>(easymotion-sn)
+"omap / <Plug>(easymotion-tn)
+"" These `n` & `N` mappings are options. You do not have to map `n` & `N` to EasyMotion.
+"" Without these mappings, `n` & `N` works fine. (These mappings just provide
+"" different highlight method and have some other features )
+"map  n <Plug>(easymotion-next)
+"map  N <Plug>(easymotion-prev)
+
+" Highligh current line
+set cursorline
+
+" Printer
+set printexpr=PrintFile(v:fname_in)
+function! PrintFile(fname)
+  call system("gtklp " . a:fname)
+  call delete(a:fname)
+  return v:shell_error
+endfunc
+
+" Rainbow
+let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
+
+" Ultisnips
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<c-j>" " hey, it works with ctrl-enter as well!
+let g:UltiSnipsJumpForwardTrigger="<C-M>"
+"let g:UltiSnipsJumpBackwardTrigger="<C-S-M>"
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
+
+" Manage tab conflicts between ultisnips and ycm
+" http://0x3f.org/blog/make-youcompleteme-ultisnips-compatible/
+"let g:ycm_key_list_select_completion = ['<C-TAB>', '<Down>']
+"let g:ycm_key_list_previous_completion = ['<C-S-TAB>', '<Up>']
+"let g:SuperTabDefaultCompletionType = '<C-Tab>'
+let g:ycm_use_ultisnips_completer = 1
+
+let g:ycm_key_list_select_completion=['<TAB>']
+let g:ycm_key_list_previous_completion=['<S-TAB>']
+
+let g:CommandTTraverseSCM = 'pwd'
